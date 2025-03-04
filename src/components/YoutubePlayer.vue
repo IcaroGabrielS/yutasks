@@ -1,12 +1,12 @@
 <template>
   <div class="youtube-container">
     <!-- Container de vídeo principal -->
-    <h4>Lofi Study</h4>
+    <h4>{{ $t('youtube.title') }}</h4>
     <div class="video-container">
       <div class="video-wrapper" :style="{ paddingBottom: '56.25%' }">
         <iframe 
           src="https://www.youtube.com/embed/jfKfPfyJRdk?autoplay=1&mute=0"
-          title="Lofi Hip Hop Radio - beats to relax/study to"
+          :title="$t('youtube.videoInfo.title')"
           frameborder="0"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowfullscreen>
@@ -16,10 +16,10 @@
     
     <div class="video-info">
       <div class="video-title">
-        lofi hip hop radio - beats to relax/study to
+        {{ $t('youtube.videoInfo.title') }}
       </div>
       <div class="video-channel">
-        Lofi Girl
+        {{ $t('youtube.videoInfo.channel') }}
       </div>
     </div>
   </div>

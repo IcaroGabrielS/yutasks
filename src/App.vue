@@ -3,6 +3,17 @@
     <div class="overlay"></div>
     
     <main class="main-container">
+      <!-- Seletor de Idioma -->
+      <div class="language-selector">
+        <button 
+          v-for="locale in availableLocales" 
+          :key="locale.code" 
+          @click="changeLanguage(locale.code)"
+          :class="{ active: currentLocale === locale.code }">
+          {{ locale.name }}
+        </button>
+      </div>
+      
       <!-- Bloco maior que envolve os subblocos -->
       <div class="main-block">
         <div class="blocks-container">
@@ -53,6 +64,39 @@ export default {
     TodoList,
     YoutubePlayer,
     AdSpace
+  },
+  data() {
+    return {
+      availableLocales: [
+        { code: 'pt', name: 'PT' },
+        { code: 'en', name: 'EN' }
+      ]
+    };
+  },
+  computed: {
+    currentLocale() {
+      return this.$i18n.locale;
+    }
+  },
+  methods: {
+    changeLanguage(locale) {
+      this.$i18n.locale = locale;
+      document.title = this.$t('app.title');
+      localStorage.setItem('yutasks-locale', locale);
+      
+      // Emitir evento para que os componentes filhos possam atualizar suas traduções se necessário
+      this.$root.$emit('language-changed', locale);
+    }
+  },
+  mounted() {
+    // Definir o título da página com base na tradução atual
+    document.title = this.$t('app.title');
+    
+    // Carregar a preferência de idioma do usuário do localStorage, se existir
+    const savedLocale = localStorage.getItem('yutasks-locale');
+    if (savedLocale && this.availableLocales.some(locale => locale.code === savedLocale)) {
+      this.$i18n.locale = savedLocale;
+    }
   }
 }
 </script>
@@ -112,6 +156,7 @@ body {
 .main-container {
   flex: 1;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   padding: 3rem 2rem;
@@ -120,6 +165,36 @@ body {
   width: 100%;
   max-width: 1280px;
   margin: 0 auto;
+}
+
+.language-selector {
+  align-self: flex-end;
+  margin-bottom: 1rem;
+  display: flex;
+  gap: 0.5rem;
+  z-index: 2;
+}
+
+.language-selector button {
+  background-color: rgba(34, 34, 34, 0.8);
+  border: var(--border-light);
+  color: var(--text-muted);
+  border-radius: 4px;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.language-selector button:hover {
+  background-color: rgba(51, 51, 51, 0.8);
+  color: var(--text-color);
+}
+
+.language-selector button.active {
+  background-color: var(--primary-color);
+  color: white;
+  border-color: var(--primary-dark);
 }
 
 .main-block {
@@ -174,6 +249,11 @@ body {
   
   .main-block {
     padding: 1.8rem 1.2rem;
+  }
+  
+  .language-selector {
+    align-self: center;
+    margin-bottom: 1.5rem;
   }
 }
 </style>

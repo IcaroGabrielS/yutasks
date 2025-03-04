@@ -1,6 +1,6 @@
 <template>
   <div class="ambient-sounds-container">
-    <h4>Sons Ambientessss</h4>
+    <h4>{{ $t('ambientSounds.title') }}</h4>
     <div class="sound-buttons">
       <button 
         v-for="sound in ambientSounds" 
@@ -9,66 +9,167 @@
         :class="{ active: sound.isPlaying }"
         @click="toggleSound(sound.id)">
         <i :class="sound.icon"></i>
-        <span>{{ sound.name }}</span>
+        <span>{{ $t(`ambientSounds.sounds.${sound.id}`) }}</span>
       </button>
     </div>
   </div>
 </template>
 
 <script>
+import brownNoiseSound from '@/assets/sounds/brown-noise.mp3';
+import underWaterSound from '@/assets/sounds/underwater.mp3';
+import rainSound from '@/assets/sounds/rain.mp3';
+import clockSound from '@/assets/sounds/clock.mp3';
+import fanSound from '@/assets/sounds/fan.mp3';
+import birdsSound from '@/assets/sounds/birds.mp3';
+
 export default {
   name: 'AmbientSounds',
   data() {
     return {
       audioPlayers: {},
       ambientSounds: [
-        { id: 'rain', name: 'Chuva', icon: 'bi bi-cloud-rain', isPlaying: false, url: 'assets/sounds/brown-noise.mp3' },
-        { id: 'forest', name: 'Floresta', icon: 'bi bi-tree', isPlaying: false, url: '/sounds/forest.mp3' },
-        { id: 'cafe', name: 'Cafeteria', icon: 'bi bi-cup-hot', isPlaying: false, url: '/sounds/cafe.mp3' },
-        { id: 'waves', name: 'Ondas', icon: 'bi bi-water', isPlaying: false, url: '/sounds/waves.mp3' },
-        { id: 'fire', name: 'Lareira', icon: 'bi bi-fire', isPlaying: false, url: '/sounds/fire.mp3' },
-        { id: 'wind', name: 'Vento', icon: 'bi bi-wind', isPlaying: false, url: '/sounds/wind.mp3' },
+        { id: 'brownNoise', icon: 'bi bi-hypnotize', isPlaying: false, url: brownNoiseSound },
+        { id: 'rain', icon: 'bi bi-cloud-drizzle', isPlaying: false, url: rainSound },
+        { id: 'underWater', icon: 'bi bi-water', isPlaying: false, url: underWaterSound },
+        { id: 'clock', icon: 'bi bi-clock', isPlaying: false, url: clockSound },
+        { id: 'fan', icon: 'bi bi-fan', isPlaying: false, url: fanSound },
+        { id: 'birds', icon: 'bi bi-feather', isPlaying: false, url: birdsSound },
       ]
     }
   },
   methods: {
-    // Métodos para gerenciar sons ambientais
+    /**
+     * Alterna entre tocar e pausar o som selecionado
+     * @param {string} id - Identificador do som
+     */
     toggleSound(id) {
       const sound = this.ambientSounds.find(s => s.id === id);
       
       if (sound.isPlaying) {
-        // Parar o som
-        if (this.audioPlayers[id]) {
-          this.audioPlayers[id].pause();
-          this.audioPlayers[id].currentTime = 0;
-        }
+        this.stopSound(id);
       } else {
-        // Iniciar o som
-        if (!this.audioPlayers[id]) {
-          this.audioPlayers[id] = new Audio(sound.url);
-          this.audioPlayers[id].loop = true;
-          this.audioPlayers[id].volume = 0.5;
-        }
-        this.audioPlayers[id].play();
+        this.playSound(id, sound);
       }
       
-      // Atualizar o estado
+      // Atualiza o estado
       sound.isPlaying = !sound.isPlaying;
     },
+
+    /**
+     * Inicia a reprodução do som
+     * @param {string} id - Identificador do som
+     * @param {Object} sound - Objeto do som
+     */
+    playSound(id, sound) {
+      try {
+        // Verifica se já existe um player
+        if (!this.audioPlayers[id]) {
+          const soundName = this.$t(`ambientSounds.sounds.${sound.id}`);
+          console.log(`Criando player para ${soundName} com URL: ${sound.url}`);
+          this.audioPlayers[id] = new Audio(sound.url);
+          this.audioPlayers[id].loop = true;
+          this.audioPlayers[id].volume = 1;
+          
+          // Adicionar listener para debug
+          this.audioPlayers[id].addEventListener('error', (e) => {
+            console.error(`Erro ao carregar áudio ${soundName}:`, e);
+          });
+        }
+        
+        // Tenta reproduzir o áudio e loga qualquer erro que ocorra
+        const playPromise = this.audioPlayers[id].play();
+        if (playPromise !== undefined) {
+          playPromise
+            .then(() => {
+              const soundName = this.$t(`ambientSounds.sounds.${sound.id}`);
+              console.log(`${soundName} está tocando`);
+            })
+            .catch(error => {
+              const soundName = this.$t(`ambientSounds.sounds.${sound.id}`);
+              console.error(`Erro ao reproduzir ${soundName}:`, error);
+              // Exibir uma mensagem para o usuário seria útil aqui
+              alert(`Não foi possível reproduzir o som: ${error.message}`);
+            });
+        }
+      } catch (error) {
+        const soundName = this.$t(`ambientSounds.sounds.${sound.id}`);
+        console.error(`Erro inesperado ao tentar reproduzir ${soundName}:`, error);
+        alert(`Erro ao iniciar a reprodução do áudio: ${error.message}`);
+      }
+    },
+
+    /**
+     * Para a reprodução do som
+     * @param {string} id - Identificador do som
+     */
+    stopSound(id) {
+      if (this.audioPlayers[id]) {
+        this.audioPlayers[id].pause();
+        this.audioPlayers[id].currentTime = 0;
+        console.log(`${id} foi pausado`);
+      }
+    },
+
+    /**
+     * Para todos os sons ativos
+     */
     stopAllSounds() {
       this.ambientSounds.forEach(sound => {
         if (sound.isPlaying) {
           this.toggleSound(sound.id);
         }
       });
+    },
+    
+    /**
+     * Verifica e loga se o arquivo de som existe
+     */
+    verifyAudioFiles() {
+      console.log('Verificando arquivos de áudio:');
+      this.ambientSounds.forEach(sound => {
+        const soundName = this.$t(`ambientSounds.sounds.${sound.id}`);
+        console.log(`${soundName}: ${sound.url}`);
+        const testAudio = new Audio(sound.url);
+        testAudio.addEventListener('canplaythrough', () => {
+          console.log(`${soundName}: áudio carregado com sucesso`);
+        });
+        testAudio.addEventListener('error', () => {
+          console.error(`${soundName}: erro ao carregar áudio`);
+        });
+      });
+    },
+    
+    /**
+     * Atualiza os nomes dos sons com base no idioma atual
+     */
+    updateSoundNames() {
+      // Atualize os nomes dos sons com base no idioma atual
+      this.ambientSounds.forEach(sound => {
+        // Use o id do som para buscar a tradução correspondente
+        const translationKey = `ambientSounds.sounds.${sound.id}`;
+        // Logue a tradução para depuração
+        console.log(`Atualizando ${sound.id} para: ${this.$t(translationKey)}`);
+      });
     }
   },
   mounted() {
     // Cleanup when component unmounts
     window.addEventListener('beforeunload', this.stopAllSounds);
+    
+    // Verifica e loga informações sobre os arquivos de áudio
+    this.verifyAudioFiles();
+    
+    // Adicionar listener para a mudança de idioma
+    this.$root.$on('language-changed', () => {
+      this.updateSoundNames();
+    });
+    
+    console.log('AmbientSounds componente montado');
   },
   beforeUnmount() {
     this.stopAllSounds();
+    this.$root.$off('language-changed');
     window.removeEventListener('beforeunload', this.stopAllSounds);
   }
 }

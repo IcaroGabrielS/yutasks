@@ -1,0 +1,56 @@
+{
+  "app": {
+    "title": "YuTasks - Productivity"
+  },
+  "ambientSounds": {
+    "title": "Focus Sounds",
+    "sounds": {
+      "brownNoise": "Brown Noise",
+      "rain": "Rain",
+      "underWater": "Under Water",
+      "clock": "Clock",
+      "fan": "Fan",
+      "birds": "Birds"
+    }
+  },
+  "tasks": {
+    "title": "Tasks",
+    "addPlaceholder": "Add a new task...",
+    "noTasks": {
+      "message": "No tasks yet"
+    }
+  },
+  "pomodoro": {
+    "title": "Pomodoro Timer",
+    "states": {
+      "focus": "Focus Time",
+      "shortBreak": "Short Break",
+      "longBreak": "Long Break"
+    },
+    "controls": {
+      "start": "Start",
+      "pause": "Pause",
+      "reset": "Reset"
+    },
+    "modes": {
+      "pomodoro": "Pomodoro",
+      "shortBreak": "Short Break",
+      "longBreak": "Long Break"
+    },
+    "sessions": "Completed Sessions",
+    "notification": {
+      "finished": "finished!"
+    }
+  },
+  "youtube": {
+    "title": "Lofi Study",
+    "videoInfo": {
+      "title": "lofi hip hop radio - beats to relax/study to",
+      "channel": "Lofi Girl"
+    }
+  },
+  "adSpace": {
+    "title": "Advertisement Space",
+    "description": "Area reserved for future ad placement"
+  }
+}
