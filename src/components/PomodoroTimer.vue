@@ -368,7 +368,6 @@ export default {
         console.error('Error checking daily reset:', error);
       }
     },
-    // Additional method to check and sync timer accuracy when page visibility changes
     checkTimerSync() {
       if (this.startTime && this.isRunning) {
         const elapsed = Math.floor((Date.now() - this.startTime) / 1000);

@@ -69,7 +69,8 @@ export default {
     return {
       availableLocales: [
         { code: 'pt', name: 'PT' },
-        { code: 'en', name: 'EN' }
+        { code: 'en', name: 'EN' },
+        { code: 'de', name: 'DE' }
       ]
     };
   },
@@ -79,25 +80,21 @@ export default {
     }
   },
   methods: {
-    changeLanguage(locale) {
-      this.$i18n.locale = locale;
-      document.title = this.$t('app.title');
-      localStorage.setItem('yutasks-locale', locale);
-      
-      // Emitir evento para que os componentes filhos possam atualizar suas traduções se necessário
-      this.$root.$emit('language-changed', locale);
-    }
-  },
-  mounted() {
-    // Definir o título da página com base na tradução atual
+  changeLanguage(locale) {
+    this.$i18n.locale = locale;
     document.title = this.$t('app.title');
-    
-    // Carregar a preferência de idioma do usuário do localStorage, se existir
+    localStorage.setItem('yutasks-locale', locale);
+    this.$root.$emit('language-changed', locale);
+  }
+},
+  mounted() {
+    // Carrega o idioma salvo no localStorage
     const savedLocale = localStorage.getItem('yutasks-locale');
     if (savedLocale && this.availableLocales.some(locale => locale.code === savedLocale)) {
       this.$i18n.locale = savedLocale;
-    }
   }
+}
+  
 }
 </script>
 
