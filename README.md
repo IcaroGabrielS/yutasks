@@ -1,3 +1,5 @@
+![alt text](image.png)
+
 # yutasks
 
 ## Project setup
